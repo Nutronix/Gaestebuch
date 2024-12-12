@@ -2,6 +2,8 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/aufgabe3" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/aufgabe3/Gaestebuch" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/gaestebuch" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/gaestebuch/aufgabe3" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/https:/github.com/Nutronix/gaestebuch.git" vcs="Git" />
