@@ -1,6 +1,8 @@
 package com.example.aufgabe3.ui.home
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
@@ -12,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.aufgabe3.model.BookingEntry
 import com.example.aufgabe3.viewmodel.SharedViewModel
+import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,7 +43,25 @@ fun HomeScreen(
                 .padding(innerPadding)
                 .fillMaxSize()
         ) {
-            // TODO inform the user if no bookingsEntries otherwise LazyColumn for bookingsEntries
+            if (bookingsEntries.isEmpty()) {
+                Text(
+                    text = "No bookings available",
+                    modifier = Modifier.padding(16.dp)
+                )
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    items(bookingsEntries) { booking ->
+                        BookingEntryItem(
+                            booking = booking,
+                            onDeleteClick = {
+                                sharedViewModel.deleteBookingEntry(booking)
+                            }
+                        )
+                    }
+                }
+            }
         }
     }
 }
@@ -50,10 +71,12 @@ fun BookingEntryItem(
     booking: BookingEntry,
     onDeleteClick: () -> Unit
 ) {
+    val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 8.dp, vertical = 4.dp),
+            .padding(8.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
@@ -64,16 +87,16 @@ fun BookingEntryItem(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = // TODO display booking name,
-                    style = MaterialTheme.typography.titleMedium
+                    text = booking.name,
+                    style = MaterialTheme.typography.headlineMedium
                 )
                 Text(
-                    text = // TODO display date in right format,
+                    text = "${booking.arrivalDate.format(dateFormatter)} - ${booking.departureDate.format(dateFormatter)}",
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
             IconButton(onClick = onDeleteClick) {
-                Icon(Icons.Default.Delete, contentDescription = "Delete booking")
+                Icon(Icons.Default.Delete, contentDescription = "Buchung löschen")
             }
         }
     }

@@ -14,7 +14,7 @@ Es soll eine Android-App mit Jetpack Compose entwickeln, die folgende Funktionen
 
 ## Bewertungskriterien und Punkteverteilung
 
-### 1. `BookingEntry.kt` (1 Punkt)
+### 1. `BookingEntry.kt` (1 Punkt) --- fertig
 
 - **Korrekte Implementierung der Datenklasse** (1 Punkt)
     - Attribute:
@@ -24,7 +24,7 @@ Es soll eine Android-App mit Jetpack Compose entwickeln, die folgende Funktionen
 
 ---
 
-### 2. `AddScreen.kt` (4,5 Punkte)
+### 2. `AddScreen.kt` (4,5 Punkte) --- fertig
 
 - **Implementierung des `DateRangePickerModal`** (2,5 Punkte)
     - **Methode für den Dialog implementieren** (1 Punkt): Die Methode `DateRangePickerModal` soll den Dialog zur Datumsauswahl anzeigen.
@@ -38,7 +38,7 @@ Es soll eine Android-App mit Jetpack Compose entwickeln, die folgende Funktionen
 
 ---
 
-### 3. `HomeScreen.kt` (3 Punkte)
+### 3. `HomeScreen.kt` (3 Punkte) --- fertig
 
 - **Anzeige der Buchungseinträge** (1,5 Punkte)
     - **Verwendung von `LazyColumn`** (0,8 Punkte): Anzeige der Einträge, wenn die Liste `bookingsEntries` nicht leer ist.
@@ -50,7 +50,7 @@ Es soll eine Android-App mit Jetpack Compose entwickeln, die folgende Funktionen
 
 ---
 
-### 4. `SharedViewModel.kt` (1,5 Punkte)
+### 4. `SharedViewModel.kt` (1,5 Punkte) --- fertig
 
 - **`addBookingEntry`-Methode implementieren** (1 Punkt): Hinzufügen neuer Einträge zur Liste.
 - **`deleteBookingEntry`-Methode implementieren** (0,5 Punkte): Entfernen von Einträgen aus der Liste.

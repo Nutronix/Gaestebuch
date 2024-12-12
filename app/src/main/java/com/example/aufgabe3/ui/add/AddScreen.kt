@@ -1,5 +1,7 @@
 package com.example.aufgabe3.ui.add
 
+import android.app.DatePickerDialog
+import android.content.Context
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -14,7 +16,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -27,21 +28,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.aufgabe3.model.BookingEntry
 import com.example.aufgabe3.viewmodel.SharedViewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddScreen(
-    navController: NavHostController,
-    sharedViewModel: SharedViewModel
-) {
+fun AddScreen(navController: NavHostController, sharedViewModel: SharedViewModel) {
     var name by remember { mutableStateOf("") }
     var arrivalDate by remember { mutableStateOf<LocalDate?>(null) }
     var departureDate by remember { mutableStateOf<LocalDate?>(null) }
 
     var showDateRangePicker by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
 
     val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
 
@@ -83,36 +84,84 @@ fun AddScreen(
                 readOnly = true,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { showDateRangePicker = true },
-                colors = OutlinedTextFieldDefaults.colors(
-                    disabledTextColor = MaterialTheme.colorScheme.onSurface,
-                    disabledBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    disabledSupportingTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+                    .clickable { showDateRangePicker = true }
             )
 
             Spacer(modifier = Modifier.height(24.dp))
 
             Button(
                 onClick = {
-                    // TODO Error handling and creating new BookingEntry and save in sharedViewModel
+                    if (name.isNotBlank() && arrivalDate != null && departureDate != null) {
+                        if (departureDate!!.isBefore(arrivalDate)) {
+                            errorMessage = "Departure date cannot be before arrival date"
+                        } else {
+                            val bookingEntry = BookingEntry(
+                                arrivalDate = arrivalDate!!,
+                                departureDate = departureDate!!,
+                                name = name
+                            )
+                            sharedViewModel.addBookingEntry(bookingEntry)
+                            navController.popBackStack()
+                        }
+                    } else {
+                        errorMessage = "Please fill in all fields"
+                    }
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Save")
             }
+
+            errorMessage?.let {
+                Text(
+                    text = it,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(16.dp)
+                )
+            }
         }
     }
 
-    // TODO implement DateRangePicker Dialog logic
+    if (showDateRangePicker) {
+        val context = LocalContext.current
+        showDateRangePicker(context) { startDate, endDate ->
+            arrivalDate = LocalDate.ofEpochDay(startDate / (24 * 60 * 60 * 1000))
+            departureDate = LocalDate.ofEpochDay(endDate / (24 * 60 * 60 * 1000))
+            showDateRangePicker = false
+        }
+    }
 }
 
-@Composable
-fun DateRangePickerModal(
-) {
-    // TODO implement DateRangePicker see https://developer.android.com/develop/ui/compose/components/datepickers?hl=de
+fun showDateRangePicker(context: Context, onDateRangeSelected: (Long, Long) -> Unit) {
+    val calendar = Calendar.getInstance()
+    val year = calendar.get(Calendar.YEAR)
+    val month = calendar.get(Calendar.MONTH)
+    val day = calendar.get(Calendar.DAY_OF_MONTH)
+
+    val datePickerDialog = DatePickerDialog(
+        context,
+        { _, selectedYear, selectedMonth, selectedDay ->
+            val startCalendar = Calendar.getInstance()
+            startCalendar.set(selectedYear, selectedMonth, selectedDay)
+            val startDate = startCalendar.timeInMillis
+
+            DatePickerDialog(
+                context,
+                { _, endYear, endMonth, endDay ->
+                    val endCalendar = Calendar.getInstance()
+                    endCalendar.set(endYear, endMonth, endDay)
+                    val endDate = endCalendar.timeInMillis
+
+                    onDateRangeSelected(startDate, endDate)
+                },
+                year,
+                month,
+                day
+            ).show()
+        },
+        year,
+        month,
+        day
+    )
+    datePickerDialog.show()
 }
